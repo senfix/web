@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/senfix/logger"
-	"github.com/senfix/web/config"
 )
 
 type Server interface {
@@ -24,7 +23,7 @@ type server struct {
 	shutdownReq chan bool
 }
 
-func NewServer(app config.Server, log logger.Log, router AppRouter) Server {
+func NewServer(app Config, log logger.Log, router AppRouter) Server {
 	s := &server{
 		Server: http.Server{
 			Addr:         app.Listen,
