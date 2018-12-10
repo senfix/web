@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/senfix/logger"
-	"github.com/senfix/web/src/config"
+	"github.com/senfix/web/config"
 )
 
 type Server interface {

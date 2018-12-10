@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/senfix/web/src/errors"
-	"github.com/senfix/web/src/response"
+	"github.com/senfix/web/errors"
+	"github.com/senfix/web/response"
 )
 
 func GetParamString(r *http.Request, name string) (value string, err error) {
