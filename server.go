@@ -10,6 +10,8 @@ import (
 	"github.com/senfix/logger"
 )
 
+var LoggerPrefix = "WEB"
+
 type Server interface {
 	Start()
 	WaitShutdown(close chan bool, closed chan bool)
@@ -31,7 +33,7 @@ func NewServer(app Config, log logger.Log, router AppRouter) Server {
 			WriteTimeout: 10 * time.Second,
 		},
 		shutdownReq: make(chan bool),
-		logger:      log.Enable("WEB"),
+		logger:      log.Enable(LoggerPrefix),
 		router:      router,
 	}
 
