@@ -2,14 +2,13 @@ package web
 
 import (
 	"context"
-	"github.com/gorilla/mux"
-	"github.com/senfix/logger"
-	"github.com/senfix/php-status-page/src/config"
 	"net/http"
-
 	"time"
 
 	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/senfix/logger"
+	"github.com/senfix/web/src/config"
 )
 
 type Server interface {
@@ -25,10 +24,10 @@ type server struct {
 	shutdownReq chan bool
 }
 
-func NewServer(app config.Kernel, log logger.Log, router AppRouter) Server {
+func NewServer(app config.Server, log logger.Log, router AppRouter) Server {
 	s := &server{
 		Server: http.Server{
-			Addr:         app.Server.Listen,
+			Addr:         app.Listen,
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
 		},

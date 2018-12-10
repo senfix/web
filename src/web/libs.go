@@ -3,18 +3,13 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/senfix/php-status-page/pkg/errors"
-	"github.com/senfix/php-status-page/src/constants"
-	app "github.com/senfix/php-status-page/src/context"
-	"github.com/senfix/php-status-page/src/web/response"
-	"net/http"
-
 	"io"
-
+	"net/http"
 	"strconv"
 
-	gorillaContext "github.com/gorilla/context"
 	"github.com/gorilla/mux"
+	"github.com/senfix/web/src/errors"
+	"github.com/senfix/web/src/response"
 )
 
 func GetParamString(r *http.Request, name string) (value string, err error) {
@@ -60,18 +55,6 @@ func Decode(w http.ResponseWriter, body io.Reader, data interface{}) (err error)
 	if err != nil {
 		EmitError(w, http.StatusUnprocessableEntity, err)
 	}
-	return
-}
-
-func LoadContext(req *http.Request) (err error, ctx app.Context) {
-	cUser, ok := gorillaContext.GetOk(req, constants.CTX_USER)
-
-	if !ok {
-		err = errors.ApiInvalidUser
-		return
-	}
-
-	ctx = cUser.(app.Context)
 	return
 }
 

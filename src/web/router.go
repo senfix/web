@@ -10,12 +10,20 @@ const (
 	StaticDir = "/static/"
 )
 
+type RouteMatch struct {
+	*mux.RouteMatch
+}
+
+type Router struct {
+	*mux.Router
+}
+
 type RouterPath interface {
-	Register(root *mux.Router) (p *mux.Router)
+	Register(root *Router)
 }
 
 type AppRouter interface {
-	Setup() *mux.Router
+	Setup() *Router
 }
 
 type appRouter struct {
@@ -29,8 +37,8 @@ func NewRouter(routes []RouterPath) AppRouter {
 	return r
 }
 
-func (r *appRouter) Setup() *mux.Router {
-	router := mux.NewRouter()
+func (r *appRouter) Setup() *Router {
+	router := &Router{mux.NewRouter()}
 
 	router.PathPrefix(StaticDir).Handler(http.StripPrefix(StaticDir, http.FileServer(http.Dir("./website/"+StaticDir))))
 
