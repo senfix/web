@@ -31,7 +31,7 @@ func NewServer(app Config, log logger.Log, router AppRouter) Server {
 			WriteTimeout: 10 * time.Second,
 		},
 		shutdownReq: make(chan bool),
-		logger:      log.Enable("REST"),
+		logger:      log.Enable("WEB"),
 		router:      router,
 	}
 
