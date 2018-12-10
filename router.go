@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	STATIC_DIR = "/static/"
+	StaticDir = "/static/"
 )
 
 type RouterPath interface {
@@ -32,7 +32,7 @@ func NewRouter(routes []RouterPath) AppRouter {
 func (r *appRouter) Setup() *mux.Router {
 	router := mux.NewRouter()
 
-	router.PathPrefix(STATIC_DIR).Handler(http.StripPrefix(STATIC_DIR, http.FileServer(http.Dir("./website/"+STATIC_DIR))))
+	router.PathPrefix(StaticDir).Handler(http.StripPrefix(StaticDir, http.FileServer(http.Dir("./website/"+StaticDir))))
 
 	for _, a := range r.routes {
 		a.Register(router)

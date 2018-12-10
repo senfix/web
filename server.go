@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/senfix/php-status-page/pkg/logger"
+	"github.com/senfix/logger"
 	"github.com/senfix/php-status-page/src/config"
 	"net/http"
 
