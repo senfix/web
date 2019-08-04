@@ -1,7 +1,9 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -35,6 +37,20 @@ func NewRouter(routes []RouterPath) AppRouter {
 		routes: routes,
 	}
 	return r
+}
+
+func (r *Router) Wildcart(domain string) *mux.Route {
+	return r.PathPrefix("/").Subrouter().MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
+
+		fmt.Printf("%+v\n", domain)
+		fmt.Printf("%+v\n", r.Host)
+
+		uri := r.RequestURI
+		if strings.HasPrefix(uri, "/socket") {
+			return false
+		}
+		return true
+	})
 }
 
 func (r *appRouter) Setup() *Router {

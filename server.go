@@ -14,6 +14,7 @@ var LoggerPrefix = "WEB"
 
 type Server interface {
 	Start()
+	Running() chan bool
 	WaitShutdown(close chan bool, closed chan bool)
 	Stop()
 }
@@ -23,25 +24,27 @@ type server struct {
 	router      AppRouter
 	logger      logger.Log
 	shutdownReq chan bool
+	running     bool
 }
 
 func NewServer(app Config, log logger.Log, router AppRouter) Server {
 	s := &server{
 		Server: http.Server{
 			Addr:         app.Listen,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			ReadTimeout:  10 * time.Minute,
+			WriteTimeout: 10 * time.Minute,
 		},
 		shutdownReq: make(chan bool),
-		logger:      log.Enable(LoggerPrefix),
+		logger:      log.Enable(LoggerPrefix, logger.Extended),
 		router:      router,
+		running:     false,
 	}
 
 	return s
 }
 
 func (s *server) Stop() {
-	s.logger.Println("Stopping web")
+	s.logger.Message("Stopping web")
 
 	//Create shutdown context with 10 second timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -59,11 +62,25 @@ func (s *server) WaitShutdown(close chan bool, closed chan bool) {
 	closed <- true
 }
 
-func (s *server) Start() {
-	s.logger.Printf("Listening on %v\n", s.Server.Addr)
+func (s *server) Running() chan bool {
+	running := make(chan bool)
+	go func() {
+		for {
+			if s.running {
+				running <- true
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}()
+	return running
+}
 
-	headersOk := handlers.AllowedHeaders([]string{"Authorization", "Content-Type"})
+func (s *server) Start() {
+	s.logger.Message("Listening on %v\n", s.Server.Addr)
+
 	originsOk := handlers.AllowedOrigins([]string{"*"})
+	headersOk := handlers.AllowedHeaders([]string{"Authorization", "Content-Type"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	handler := s.router.Setup()
@@ -72,12 +89,13 @@ func (s *server) Start() {
 		met, err2 := route.GetMethods()
 		if err2 == nil {
 			for _, m := range met {
-				s.logger.Printf("%v %v\n", m, tpl)
+				s.logger.Debug("%v %v\n", m, tpl)
 			}
 		}
 
 		return nil
 	})
 	s.Handler = handlers.CORS(originsOk, headersOk, methodsOk)(handler)
+	s.running = true
 	s.ListenAndServe()
 }
